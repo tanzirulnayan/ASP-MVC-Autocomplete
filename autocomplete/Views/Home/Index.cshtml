@@ -1,0 +1,60 @@
+﻿@model autocomplete.Models.Games
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <br /> <br />
+        <div class="form-group">
+            <div class="col-md-12">
+                <label for="games"> Select Game: - </label>
+                @Html.EditorFor(model => model.GameName, new
+                {
+                    htmlAttributes = new
+                {
+                    @class = "form-control"
+                }
+            })
+            </div>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#GameName").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Home/Index",
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                        keyword: request.term
+                    },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.GameName,
+                                value: item.GameName
+                            };
+                        }))
+                    },
+                    error: function () {
+                        alert('something went wrong !');
+                    }
+                })
+            },
+            messages: {
+                noResults: "",
+                results: ""
+            }
+        });
+    })
+</script>
